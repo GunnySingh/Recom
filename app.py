@@ -18,8 +18,9 @@ import seaborn as sns
 import plotly.express as px
 # import altair as alt
 import re
+import time
 
-st.set_page_config(page_title='Hi',page_icon='clapper')
+st.set_page_config(page_title='Movie Recoms',page_icon='clapper')
 
 st.markdown("""
 <style>
@@ -30,16 +31,15 @@ color:tomato;
 top:3px;}</style>""",unsafe_allow_html=True)
 
 with st.sidebar:
-    sel = option_menu(menu_title = 'Main Menu',options = ['Home','Multi-Select Movies','Year','Actors','Director','About'],\
-        menu_icon=['list'],icons=['house','check-all','calendar-date','person-bounding-box','person-workspace','info-circle'],
+    sel = option_menu(menu_title = 'Main Menu',options = ['Home','Multi-Select Movies','Actors','Director','Year','About'],\
+        menu_icon=['list'],icons=['house','check-all','person-bounding-box','person-workspace','calendar-date','info-circle'],
         default_index=0)
 
 
-# sim_mat = pickle.load(open('sim_mat.pkl','rb'))
-final = pickle.load(open('df_final.pkl','rb'))
-actor = pickle.load(open('df_actor.pkl','rb'))
-@st.cache
-def sim():
+
+
+@st.cache()
+def data_load():
     sim_1 = pickle.load(open('sim_1.pkl','rb'))
     sim_2 = pickle.load(open('sim_2.pkl','rb'))
     sim_3 = pickle.load(open('sim_3.pkl','rb'))
@@ -52,12 +52,18 @@ def sim():
     sim_10 = pickle.load(open('sim_10.pkl','rb'))
     sim_11 = pickle.load(open('sim_11.pkl','rb'))
     sim_12 = pickle.load(open('sim_12.pkl','rb'))
+    final = pickle.load(open('df_final.pkl','rb'))
+    actor = pickle.load(open('df_actor.pkl','rb'))
+    eda_df = pickle.load(open('eda_df.pkl','rb'))
+    
 
     sim_mat = np.concatenate([sim_1,sim_2,sim_3,sim_4,sim_5,sim_6,sim_7,sim_8,sim_9,sim_10,sim_11,sim_12])
 
-    return sim_mat
+    return sim_mat,final,actor,eda_df
 
-sim_mat = sim()
+sim_mat,final,actor,eda_df = data_load()
+
+
 def recommend(movie):
     index = final[final.key == movie].index[0]
     results = sorted(list(enumerate(sim_mat[index])),key=lambda x :x[1])
@@ -79,7 +85,7 @@ if sel=='Home':
     MOVIE RECOMMENDATION SYSTEM
     </h3>
     """,unsafe_allow_html=True)
-    name = st.selectbox(label='Please select the Movie',options=final['key'],index=7421,help='Select Movie from below to get recommendations')
+    name = st.selectbox(label='Please select the Movie',options=final['key'],index=10375,help='Select Movie from below to get recommendations')
 
     # st.subheader(name)
     st.markdown("""
@@ -156,7 +162,7 @@ if sel=='Home':
             known_posters = final.iloc[known_for_idx].sort_values(by='num_votes_num',ascending=False)[:4]['poster'].values
             known_title = final.iloc[known_for_idx].sort_values(by='num_votes_num',ascending=False)[:4]['title'].values
             for i,cols in enumerate(st.columns(len(known_posters))):
-                cols.image('https://image.tmdb.org/t/p/w500'+known_posters[i],caption=known_title[i])
+                cols.image('https://image.tmdb.org/t/p/w500'+known_posters[i],caption=known_title[i],width=170)
 
             
 
@@ -198,7 +204,7 @@ if sel=='Year':
     </h1>""",unsafe_allow_html=True)
     year_range = st.slider(label='Select Year',min_value=1950,max_value=2021,step=1,value=[2005,2021])
 
-    eda_df = pickle.load(open('eda_df.pkl','rb'))
+    
     start = year_range[0]
     end = year_range[1]
     eda= eda_df[eda_df.year.between(start,end,inclusive=True)]
@@ -214,8 +220,8 @@ if sel=='Year':
             st.dataframe(eda[['year','values']])
 
     if radio_sel == 'Revenue By Year':
-        b = px.scatter(data_frame=eda,x='year',y='revenue',size='revenue',size_max=25,color='revenue',color_continuous_scale='brbg',\
-            labels={'year':'YEAR','revenue':'REVENUE'},title='REVENUE BY YEAR',hover_name='title')    
+        b = px.scatter(data_frame=eda,x='year',y='revenue',size='revenue',size_max=25,color='revenue',color_continuous_scale='picnic',\
+            labels={'year':'YEAR','revenue':'REVENUE'},title='REVENUE BY YEAR',hover_name='title',template='seaborn')    
         st.plotly_chart(b,use_container_width=True)
 
         if st.button(label='Raw Data'):
@@ -233,7 +239,8 @@ if sel =='Multi-Select Movies':
     st.write(' ')
     col1,col2 = st.columns([1,4])
     no_movies = col1.selectbox(label='No. of movies',options=range(2,9),index=2)
-    multi_movies = col2.multiselect(label='Select your favoutive movies below :',options=final.key)
+    multi_movies = col2.multiselect(label='Select your favoutive movies below :',options=final.key,default=['The Pursuit of Happyness (2006)','The Social Network (2010)',\
+        'The Big Short (2015)','A Beautiful Mind (2001)'])
     
     multi_movies_idx=[]
     for i in multi_movies:
@@ -315,7 +322,222 @@ if sel =='Actors':
     <h1 style ='color:DarkSlateGray;font-size:250%;text-align:center;'>
     SEARCH BY ACTOR
     </h1>""",unsafe_allow_html=True)
-    st.header('Coming Soon...')
+    
+    graph_sel = st.sidebar.selectbox(label='SEARCH BY :',options=['Year','Genre','Other Actors'])
+    
+    st.cache()
+    def age_actor(birthdate):
+        today = date.today()
+        d = datetime.strptime(birthdate,"%Y-%m-%d")
+        age = ((today-d.date())/365).days
+        return str(age)+' Years'
+
+    api_key = 'ef9ce1abb955e162c424955afe1df5a7'
+
+    sel_actor = st.selectbox(label='',options=actor.name_imdb.values,index=14236)
+    
+    st.cache()
+    def actor_details(sel_actor):
+        actor_idx = actor[actor.name_imdb==sel_actor].index[0]
+        actor_path = actor.iloc[actor_idx]['poster']
+        actor_id = actor.iloc[actor_idx]['id']
+
+        col1,col2 = st.columns(2)
+        with col1:
+    
+            st.image(actor_path,caption = sel_actor,width=300)
+
+        res = requests.get('https://api.themoviedb.org/3/person/{}?api_key={}&language=en-US'.format(actor_id,api_key))
+        data = res.json()
+        age = age_actor(data['birthday'])
+        
+        with col2:
+            for i in range(4):
+                st.write('')
+            st.markdown('*Age* : {}'.format(age))
+            st.markdown('*Born* : {}'.format(data['place_of_birth']))
+            # st.markdown('*Bio* : ')
+            st.text_area('Bio',data['biography'],height=270)
+        
+        st.markdown('*Best Known For:*')
+                
+        known_for_idx = []
+
+        for i,k in enumerate(final.cast):
+            for j in k.split(','):
+                if re.search(sel_actor+'$',j):
+                    known_for_idx.append(i)
+
+        known_posters = final.iloc[known_for_idx].sort_values(by='num_votes_num',ascending=False)[:4]['poster'].values
+        known_title = final.iloc[known_for_idx].sort_values(by='num_votes_num',ascending=False)[:4]['title'].values
+        for i,cols in enumerate(st.columns(len(known_posters))):
+            cols.image('https://image.tmdb.org/t/p/w500'+known_posters[i],caption=known_title[i],width=170)
+        
+        return known_for_idx
+
+    known_for_idx = actor_details(sel_actor)
+    
+    st.cache()
+    def actor_movies(idx):
+        d_a = final.iloc[idx].reset_index(drop=True)
+        return d_a
+    d_a = actor_movies(known_for_idx)
+    
+        
+
+    if graph_sel =='Year':
+        top_movies = st.sidebar.radio(label='Show :',options=['All Movies','Top Movies'],key=11)
+        graph_sort = st.radio(label='Show values by :',options=['REVENUE','POPULARITY','RATING'],horizontal=True)
+        
+        st.cache()
+        def actor_year_graph(top_movies,graph_sort):
+            if graph_sort=='REVENUE':
+                
+                val='revenue_num'
+            elif graph_sort == 'POPULARITY':
+                val = 'num_votes_num'
+            else:
+                val = 'rating'
+
+            if top_movies=='All Movies':
+                fig = px.bar(data_frame=d_a,x='year',y=val,hover_name='title',labels={'year':'Year',val:graph_sort,'rating':'Rating'},hover_data=['rating'],
+                color=val,color_continuous_scale='ice',title='Movies By '+graph_sort)
+                fig.update_xaxes(type='category')
+                fig.update_layout(title_font_family='cambria',title_font_size=14)
+                st.plotly_chart(fig)
+
+                with st.expander(label='Raw Data'):
+                    st.write(d_a[['title','year','runtime','revenue','budget','num_votes','overview','cast','director','genre']])
+
+            elif top_movies=='Top Movies':
+                d_a2 = d_a.sort_values(by=['year',val],ascending=[True,False]).drop_duplicates('year').reset_index(drop=True)
+
+                fig = px.bar(data_frame=d_a2,x='year',y=val,hover_name='title',labels={'year':'Year',val:graph_sort,'rating':'Rating'},hover_data=['rating'],
+                color=val,color_continuous_scale='ice',title='Movies By '+graph_sort)
+                fig.update_xaxes(type='category')
+                fig.update_layout(title_font_family='cambria',title_font_size=14)
+                st.plotly_chart(fig)
+
+                with st.expander(label='Raw Data'):
+                    st.write(d_a2[['title','year','runtime','revenue','budget','num_votes','overview','cast','director','genre']])
+
+        actor_year_graph(top_movies,graph_sort)
+    
+    
+
+    
+
+    
+    if graph_sel=='Genre':
+        st.cache()
+        def genre_list(df):
+            genre_list = []
+            for i in df.genre:
+                for j in i.split(' '):
+                    genre_list.append(j.strip())
+            return set(genre_list)
+        genre_l = genre_list(d_a)
+
+        c1,c2 = st.columns([5,1])
+
+        with c1:
+
+            genre_sel = st.multiselect(label='Select Genre',options=genre_l)
+        with c2:
+            st.write(' ')
+            st.write(' ')
+            search  = st.button('Search')
+        
+        st.cache()
+        def genre_sel_idx(genre_sel):
+            g_idx = []
+            for g in genre_sel:
+                for i,k in enumerate(d_a['genre']):
+                    for j in k.split(' '):
+                        if re.search(g+'$',j):
+                            g_idx.append(i)
+            return g_idx
+        g_idx = genre_sel_idx(genre_sel)
+        if search==True:
+            colors = px.colors.named_colorscales()
+            fig3 = px.scatter(data_frame=d_a.iloc[g_idx],x='title',y='revenue_num',size='num_votes_num',hover_name='title',\
+                 color_continuous_scale=colors[np.random.randint(0,95)],color='rating',labels={'title':'Movie','revenue_num':'Revenue','num_votes_num':'Popularity','rating':'Rating','year':'Year'},\
+                     hover_data=['year'],size_max=50,title='Movies By Revenue VS Popularity VS Rating')
+            fig3.update_xaxes(type='category')
+            fig3.update_layout(title_font_family='cambria',title_font_size=14)
+            
+            
+            st.plotly_chart(fig3)
+        with st.expander('raw data'):
+            st.write(d_a.iloc[g_idx][['title','year','runtime','revenue','budget','num_votes','overview','cast','director','genre']].drop_duplicates().reset_index(drop=True))
+
+    if graph_sel=='Other Actors':
+        other_actor_sel = st.selectbox(label='Select Actor:',options=actor.name)
+        # st.title('Sort by 4 options')
+        @st.cache()
+        def other_actor_index(name):
+            actor2_idx = []
+            for k,i in enumerate(d_a.cast):
+                for j in i.split(','):
+                    if re.search(name+'$',j) :
+                        actor2_idx.append(k)
+            return actor2_idx
+
+        actor2_idx = other_actor_index(other_actor_sel)
+        if actor2_idx==[]:
+            st.write('No Movies Found')
+        else:
+            sortby = st.radio(label='Sort By:',options=['Year','Rating','Revenue','Popularity'],horizontal=True)
+            if sortby=='Year':
+                d_b = d_a.iloc[actor2_idx].sort_values(by='year').reset_index(drop=True)
+            elif sortby == 'Rating':
+                d_b = d_a.iloc[actor2_idx].sort_values(by='rating',ascending=False).reset_index(drop=True)
+            elif sortby=='Revenue':
+                d_b = d_a.iloc[actor2_idx].sort_values(by='revenue_num',ascending=False).reset_index(drop=True)
+            elif sortby == 'Popularity':
+                d_b = d_a.iloc[actor2_idx].sort_values(by='num_votes_num',ascending=False).reset_index(drop=True)
+            # st.write(d_a.iloc[actor2_idx])
+            # d_b = d_a.iloc[actor2_idx]
+            d_b_name = d_b['key'].values
+            d_b_year = d_b['year'].values
+            d_b_runtime = d_b['runtime'].values
+            d_b_rating = d_b['rating'].values
+            d_b_votes = d_b['num_votes'].values
+            d_b_director = d_b['director'].values
+            d_b_cast = d_b['cast'].values
+            d_b_genre = d_b['genre'].values
+            d_b_overview = d_b['overview'].values
+            for i in range(d_b.shape[0]):
+                colu1,colu2 = st.columns([1,3])
+                with colu1:
+
+                    colu1.image('https://image.tmdb.org/t/p/w500'+d_b['poster'].values[i])
+                with colu2:
+                    st.markdown('_Name_ : {}'.format(d_b_name[i]))
+                    st.markdown('_Runtime_ : {}'.format(d_b_runtime[i]))
+                    st.markdown('_Rating_ : {} ({} Votes)'.format(d_b_rating[i],d_b_votes[i]))
+                    st.markdown('_Cast_ : {}'.format(d_b_cast[i]))
+                    st.markdown('_Director_ : {}'.format(d_b_director[i]))
+                    st.markdown('_Genre_ : {}'.format(d_b_genre[i]))
+                    # st.markdown('_Summary_ :'.format(d_b_overview[i]))
+                    # st.text_area(label='Summary',value=d_b_overview[i])
+
+            
+            with st.expander(label='Raw Data '):
+                st.write(d_b.reset_index(drop=True))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if sel =='Director':
@@ -323,10 +545,205 @@ if sel =='Director':
     <h1 style ='color:DarkSlateGray;font-size:250%;text-align:center;'>
     SEARCH BY DIRECTOR
     </h1>""",unsafe_allow_html=True)
+    graph_sel =  st.sidebar.selectbox(label='Search By :',options=['Year','Genre','Other Actors'])
+    @st.cache()
+    def director_list():
+        direc = pickle.load(open('df_director.pkl','rb'))
+        
+        return direc['name'],direc['path'],direc['bio'],direc['birthday'],direc['death'],direc['place']
+    def age_direc(birthdate):
+        today = date.today()
+        d = datetime.strptime(birthdate,"%Y-%m-%d")
+        age = ((today-d.date())/365).days
+        return str(age)+' Years'
 
-    st.header('Coming Soon...')
+    direc_names,direc_path,direc_bio,direc_birthday,direc_death,direc_place = director_list()
+    
+    sel_direc = st.selectbox(label='',options=direc_names,index=921)
+    st.cache()
+    def director_details():
+        direc_idx = np.where(direc_names==sel_direc)[0][0]
+        col1,col2 = st.columns(2)
+        with col1:
+            st.image(direc_path[direc_idx],caption=direc_names[direc_idx],width=300)
+        with col2:
+            try:
+                for i in range(4):
+                    st.write('')
+                st.markdown('_Age_ : {}'.format(age_direc(direc_birthday[direc_idx])))
+                st.markdown('_Born_ :{}'.format(direc_place[direc_idx]))
+                st.text_area('Bio :',direc_bio[direc_idx],height=270)
+            # st.markdown(direc_bio[direc_idx])
+            
+            except:
+                st.write('No Info Available')
+        try:
+            st.markdown('##### **Best Know For:**')
+            known_for_idx = []
 
+            for i,k in enumerate(final.director):
+                for j in k.split(','):
+                    if re.search(sel_direc+'$',j):
+                        known_for_idx.append(i)
 
+            known_posters = final.iloc[known_for_idx].sort_values(by='num_votes_num',ascending=False)[:4]['poster'].values
+            known_title = final.iloc[known_for_idx].sort_values(by='num_votes_num',ascending=False)[:4]['title'].values
+            for i,cols in enumerate(st.columns(len(known_posters))):
+                cols.image('https://image.tmdb.org/t/p/w500'+known_posters[i],caption=known_title[i],width=170)
+
+        except:
+            st.write('No movies found.')
+        return known_for_idx
+
+    known_for_idx = director_details()
+        
+    st.cache()
+    def director_movies(idx):
+        q_a = final.iloc[idx].reset_index(drop=True)
+        return q_a
+    q_a = director_movies(known_for_idx)
+    if graph_sel =='Year':
+
+        top_movies = st.sidebar.radio(label='Show :',options=['All Movies','Top Movies'],key=11)
+        graph_sort = st.radio(label='Show values by :',options=['REVENUE','POPULARITY','RATING'],horizontal=True)
+
+        st.cache()
+        def director_year_graph(top_movies,graph_sort):
+            if graph_sort=='REVENUE':
+                
+                val='revenue_num'
+            elif graph_sort == 'POPULARITY':
+                val = 'num_votes_num'
+            else:
+                val = 'rating'
+
+            if top_movies=='All Movies':
+                fig = px.bar(data_frame=q_a,x='year',y=val,hover_name='title',labels={'year':'Year',val:graph_sort,'rating':'Rating'},hover_data=['rating'],
+                color=val,color_continuous_scale='ice',title='Movies By '+graph_sort)
+                fig.update_xaxes(type='category')
+                fig.update_layout(title_font_family='cambria',title_font_size=14)
+                st.plotly_chart(fig)
+
+                with st.expander(label='Raw Data'):
+                    st.write(q_a[['title','year','runtime','revenue','budget','num_votes','overview','cast','director','genre']])
+
+            elif top_movies=='Top Movies':
+                q_a2 = q_a.sort_values(by=['year',val],ascending=[True,False]).drop_duplicates('year').reset_index(drop=True)
+
+                fig = px.bar(data_frame=q_a2,x='year',y=val,hover_name='title',labels={'year':'Year',val:graph_sort,'rating':'Rating'},hover_data=['rating'],
+                color=val,color_continuous_scale='ice',title='Movies By '+graph_sort)
+                fig.update_xaxes(type='category')
+                fig.update_layout(title_font_family='cambria',title_font_size=14)
+                st.plotly_chart(fig)
+
+                with st.expander(label='Raw Data'):
+                    st.write(q_a2[['title','year','runtime','revenue','budget','num_votes','overview','cast','director','genre']])
+
+        director_year_graph(top_movies,graph_sort)
+        
+        
+    
+    if graph_sel=='Genre':
+        st.cache()
+        def genre_list(df):
+            genre_list = []
+            for i in df.genre:
+                for j in i.split(' '):
+                    genre_list.append(j.strip())
+            return set(genre_list)
+        genre_l = genre_list(q_a)
+
+        c1,c2 = st.columns([5,1])
+
+        with c1:
+
+            genre_sel = st.multiselect(label='Select Genre',options=genre_l)
+        with c2:
+            st.write(' ')
+            st.write(' ')
+            search  = st.button('Search')
+        
+        st.cache()
+        def genre_sel_idx(genre_sel):
+            g_idx = []
+            for g in genre_sel:
+                for i,k in enumerate(q_a['genre']):
+                    for j in k.split(' '):
+                        if re.search(g+'$',j):
+                            g_idx.append(i)
+            return g_idx
+        g_idx = genre_sel_idx(genre_sel)
+        if search==True:
+            colors = px.colors.named_colorscales()
+            fig3 = px.scatter(data_frame=q_a.iloc[g_idx],x='title',y='revenue_num',size='num_votes_num',hover_name='title',\
+                 color_continuous_scale=colors[np.random.randint(0,95)],color='rating',labels={'title':'Movie','revenue_num':'Revenue','num_votes_num':'Popularity','rating':'Rating','year':'Year'},\
+                     hover_data=['year'],size_max=50,title='Movies By Revenue VS Popularity VS Rating')
+            fig3.update_xaxes(type='category')
+            fig3.update_layout(title_font_family='cambria',title_font_size=14)
+            
+            
+            st.plotly_chart(fig3)
+        with st.expander('raw data'):
+            st.write(q_a.iloc[g_idx][['title','year','runtime','revenue','budget','num_votes','overview','cast','director','genre']].drop_duplicates().reset_index(drop=True))
+
+       
+
+    if graph_sel=='Other Actors':
+        other_actor_sel = st.selectbox(label='Select Actor:',options=actor.name)
+        # st.title('Sort by 4 options')
+        @st.cache()
+        def other_actor_index(name):
+            actor2_idx = []
+            for k,i in enumerate(q_a.cast):
+                for j in i.split(','):
+                    if re.search(name+'$',j) :
+                        actor2_idx.append(k)
+            return actor2_idx
+
+        actor2_idx = other_actor_index(other_actor_sel)
+        if actor2_idx==[]:
+            st.write('No Movies Found')
+        else:
+            sortby = st.radio(label='Sort By:',options=['Year','Rating','Revenue','Popularity'],horizontal=True)
+            if sortby=='Year':
+                q_b = q_a.iloc[actor2_idx].sort_values(by='year').reset_index(drop=True)
+            elif sortby == 'Rating':
+                q_b = q_a.iloc[actor2_idx].sort_values(by='rating',ascending=False).reset_index(drop=True)
+            elif sortby=='Revenue':
+                q_b = q_a.iloc[actor2_idx].sort_values(by='revenue_num',ascending=False).reset_index(drop=True)
+            elif sortby == 'Popularity':
+                q_b = q_a.iloc[actor2_idx].sort_values(by='num_votes_num',ascending=False).reset_index(drop=True)
+            # st.write(d_a.iloc[actor2_idx])
+            # d_b = d_a.iloc[actor2_idx]
+            q_b_name = q_b['key'].values
+            q_b_year = q_b['year'].values
+            q_b_runtime = q_b['runtime'].values
+            q_b_rating = q_b['rating'].values
+            q_b_votes = q_b['num_votes'].values
+            q_b_director = q_b['director'].values
+            q_b_cast = q_b['cast'].values
+            q_b_genre = q_b['genre'].values
+            q_b_overview = q_b['overview'].values
+            for i in range(q_b.shape[0]):
+                colu1,colu2 = st.columns([1,3])
+                with colu1:
+
+                    colu1.image('https://image.tmdb.org/t/p/w500'+q_b['poster'].values[i])
+                with colu2:
+                    st.markdown('_Name_ : {}'.format(q_b_name[i]))
+                    st.markdown('_Runtime_ : {}'.format(q_b_runtime[i]))
+                    st.markdown('_Rating_ : {} ({} Votes)'.format(q_b_rating[i],q_b_votes[i]))
+                    st.markdown('_Cast_ : {}'.format(q_b_cast[i]))
+                    st.markdown('_Director_ : {}'.format(q_b_director[i]))
+                    st.markdown('_Genre_ : {}'.format(q_b_genre[i]))
+                    # st.markdown('_Summary_ :'.format(d_b_overview[i]))
+                    # st.text_area(label='Summary',value=d_b_overview[i])
+
+            
+            with st.expander(label='Raw Data '):
+                st.write(q_b.reset_index(drop=True))
+        
+    
 if sel == 'About':
     st.markdown("""
     <h1 style ='color:DarkSlateGray;font-size:250%;font-family:Times New Roman;text-align:center;'>
