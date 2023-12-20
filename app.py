@@ -57,7 +57,7 @@ def data_load():
     sim_12 = pickle.load(open('sim_12.pkl', 'rb'))
     final = pickle.load(open('df_final.pkl', 'rb'))
     actor = pickle.load(open('df_actor.pkl', 'rb'))
-    eda_df = pickle.load(open('eda_df.pkl', 'rb'))
+    # eda_df = pickle.load(open('eda_df.pkl', 'rb'))
 
     sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4, sim_5, sim_6, sim_7, sim_8, sim_9, sim_10, sim_11, sim_12])
 
