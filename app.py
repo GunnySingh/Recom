@@ -41,7 +41,7 @@ with st.sidebar:
                       default_index=0)
 
 
-@st.cache_data()
+# @st.cache_data()
 def data_load():
     sim_1 = pickle.load(open('sim_1.pkl', 'rb'))
     sim_2 = pickle.load(open('sim_2.pkl', 'rb'))
@@ -335,7 +335,7 @@ if sel == 'Actors':
 
     graph_sel = st.sidebar.selectbox(label='SEARCH BY :', options=['Year', 'Genre', 'Other Actors'])
 
-    st.cache()
+    # st.cache()
 
 
     def age_actor(birthdate):
@@ -349,7 +349,7 @@ if sel == 'Actors':
 
     sel_actor = st.selectbox(label='', options=actor.name_imdb.values, index=14236)
 
-    st.cache()
+    # st.cache()
 
 
     def actor_details(sel_actor):
@@ -393,7 +393,7 @@ if sel == 'Actors':
 
     known_for_idx = actor_details(sel_actor)
 
-    st.cache()
+    # st.cache()
 
 
     def actor_movies(idx):
@@ -407,7 +407,7 @@ if sel == 'Actors':
         top_movies = st.sidebar.radio(label='Show :', options=['All Movies', 'Top Movies'], key=11)
         graph_sort = st.radio(label='Show values by :', options=['REVENUE', 'POPULARITY', 'RATING'], horizontal=True)
 
-        st.cache()
+        # st.cache()
 
 
         def actor_year_graph(top_movies, graph_sort):
@@ -450,7 +450,7 @@ if sel == 'Actors':
         actor_year_graph(top_movies, graph_sort)
 
     if graph_sel == 'Genre':
-        st.cache()
+        # st.cache()
 
 
         def genre_list(df):
@@ -473,7 +473,7 @@ if sel == 'Actors':
             st.write(' ')
             search = st.button('Search')
 
-        st.cache()
+        # st.cache()
 
 
         def genre_sel_idx(genre_sel):
@@ -509,7 +509,7 @@ if sel == 'Actors':
 
 
         # st.title('Sort by 4 options')
-        @st.cache_data
+        # @st.cache_data
         def other_actor_index(name):
             actor2_idx = []
             for k, i in enumerate(d_a.cast):
@@ -568,7 +568,7 @@ if sel == 'Director':
     graph_sel = st.sidebar.selectbox(label='Search By :', options=['Year', 'Genre', 'Other Actors'])
 
 
-    @st.cache_data
+    # @st.cache_data
     def director_list():
         direc = pickle.load(open('df_director.pkl', 'rb'))
 
@@ -585,7 +585,7 @@ if sel == 'Director':
     direc_names, direc_path, direc_bio, direc_birthday, direc_death, direc_place = director_list()
 
     sel_direc = st.selectbox(label='', options=direc_names, index=921)
-    st.cache()
+    # st.cache()
 
 
     def director_details():
@@ -626,7 +626,7 @@ if sel == 'Director':
 
     known_for_idx = director_details()
 
-    st.cache()
+    # st.cache()
 
 
     def director_movies(idx):
@@ -640,7 +640,7 @@ if sel == 'Director':
         top_movies = st.sidebar.radio(label='Show :', options=['All Movies', 'Top Movies'], key=11)
         graph_sort = st.radio(label='Show values by :', options=['REVENUE', 'POPULARITY', 'RATING'], horizontal=True)
 
-        st.cache()
+        # st.cache()
 
 
         def director_year_graph(top_movies, graph_sort):
@@ -683,7 +683,7 @@ if sel == 'Director':
         director_year_graph(top_movies, graph_sort)
 
     if graph_sel == 'Genre':
-        st.cache()
+        # st.cache()
 
 
         def genre_list(df):
@@ -706,7 +706,7 @@ if sel == 'Director':
             st.write(' ')
             search = st.button('Search')
 
-        st.cache()
+        # st.cache()
 
 
         def genre_sel_idx(genre_sel):
@@ -742,7 +742,7 @@ if sel == 'Director':
 
 
         # st.title('Sort by 4 options')
-        @st.cache_data
+        # @st.cache_data
         def other_actor_index(name):
             actor2_idx = []
             for k, i in enumerate(q_a.cast):
