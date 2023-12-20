@@ -78,8 +78,7 @@ def data_load():
 
     return  final, actor, eda_df
 
-
- final, actor, eda_df = data_load()
+final, actor, eda_df = data_load()
 
 
 def recommend(movie):
