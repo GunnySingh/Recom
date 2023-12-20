@@ -41,7 +41,7 @@ with st.sidebar:
                       default_index=0)
 
 
-@st.cache_data()
+# @st.cache_data()
 def data_load():
     # sim_1 = pickle.load(open('sim_1.pkl', 'rb'))
     # sim_2 = pickle.load(open('sim_2.pkl', 'rb'))
