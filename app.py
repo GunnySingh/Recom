@@ -131,16 +131,16 @@ sim_mat = data_load1()
 #     return final.iloc[idx]['title'].values[1:],'https://image.tmdb.org/t/p/w500'+final.iloc[idx]['poster'].values[1:],final.iloc[idx]['key'].values[1:]
 
 
-if sel == 'Home':
+# if sel == 'Home':
 
-    # st.title('MOVIE RECOMMENDATION SYSTEM')
-    st.markdown("""
-    <h3 style = font-size:270%;text-align:center;color:darkslategray;>
-    MOVIE RECOMMENDATION SYSTEM
-    </h3>
-    """, unsafe_allow_html=True)
-    name = st.selectbox(label='Please select the Movie', options=final['key'], index=10375,
-                        help='Select Movie from below to get recommendations')
+#     # st.title('MOVIE RECOMMENDATION SYSTEM')
+#     st.markdown("""
+#     <h3 style = font-size:270%;text-align:center;color:darkslategray;>
+#     MOVIE RECOMMENDATION SYSTEM
+#     </h3>
+#     """, unsafe_allow_html=True)
+#     name = st.selectbox(label='Please select the Movie', options=final['key'], index=10375,
+#                         help='Select Movie from below to get recommendations')
 
 #     # st.subheader(name)
 #     st.markdown("""
