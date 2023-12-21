@@ -104,8 +104,8 @@ def data_load2():
     return final,actor,eda_df
 
 
-sim_mat = dataload1()
-final,actor,eda_df = dataload2()
+sim_mat = data_load1()
+final,actor,eda_df = data_load2()
 
 
 
