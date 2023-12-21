@@ -119,16 +119,16 @@ final,actor,eda_df = data_load2()
 
 
 
-# def recommend(movie):
-#     index = final[final.key == movie].index[0]
-#     results = sorted(list(enumerate(sim_mat[index])),key=lambda x :x[1])
+def recommend(movie):
+    index = final[final.key == movie].index[0]
+    results = sorted(list(enumerate(sim_mat[index])),key=lambda x :x[1])
 
-#     idx = []
-#     for i in results[:13]:
-#         idx.append(i[0])
+    idx = []
+    for i in results[:13]:
+        idx.append(i[0])
 
 
-#     return final.iloc[idx]['title'].values[1:],'https://image.tmdb.org/t/p/w500'+final.iloc[idx]['poster'].values[1:],final.iloc[idx]['key'].values[1:]
+    return final.iloc[idx]['title'].values[1:],'https://image.tmdb.org/t/p/w500'+final.iloc[idx]['poster'].values[1:],final.iloc[idx]['key'].values[1:]
 
 
 if sel == 'Home':
@@ -175,51 +175,51 @@ if sel == 'Home':
         st.markdown('**`Summary`** : {}'.format(summary))
         st.markdown('**`Director`** : {}'.format(director))
 
-#     len_cast = len(cast.split(','))
-#     cast_names = cast.split(',')
+    len_cast = len(cast.split(','))
+    cast_names = cast.split(',')
 
 
-#     def age_cast(birthdate):
-#         today = date.today()
-#         d = datetime.strptime(birthdate, "%Y-%m-%d")
-#         age = ((today - d.date()) / 365).days
-#         return str(age) + ' Years'
+    def age_cast(birthdate):
+        today = date.today()
+        d = datetime.strptime(birthdate, "%Y-%m-%d")
+        age = ((today - d.date()) / 365).days
+        return str(age) + ' Years'
 
 
-#     api_key = 'ef9ce1abb955e162c424955afe1df5a7'
-#     st.markdown('#### CAST :')
+    api_key = 'ef9ce1abb955e162c424955afe1df5a7'
+    st.markdown('#### CAST :')
 
-#     for i, k in enumerate(st.columns(len_cast)):
-#         name_cast = cast_names[i]
-#         name_cast = difflib.get_close_matches(name_cast, actor.name)[0]
-#         cast_idx = actor[actor.name == name_cast].index[0]
-#         poster_path_cast = actor.iloc[cast_idx]['poster']
-#         k.image(poster_path_cast)
-#         if k.button(cast_names[i], key=i):
+    for i, k in enumerate(st.columns(len_cast)):
+        name_cast = cast_names[i]
+        name_cast = difflib.get_close_matches(name_cast, actor.name)[0]
+        cast_idx = actor[actor.name == name_cast].index[0]
+        poster_path_cast = actor.iloc[cast_idx]['poster']
+        k.image(poster_path_cast)
+        if k.button(cast_names[i], key=i):
 
-#             cast_id = actor.iloc[cast_idx]['id']
-#             res = requests.get(
-#                 'https://api.themoviedb.org/3/person/{}?api_key={}&language=en-US'.format(cast_id, api_key))
-#             data = res.json()
-#             age = age_cast(data['birthday'])
-#             k.markdown('*Age* : {}'.format(age))
-#             k.markdown('*Born* : {}'.format(data['place_of_birth']))
-#             # k.markdown('*Biography* : {}'.format(data['biography']))
-#             st.text_area('Bio', data['biography'], height=200)
-#             st.markdown('*Best Known For:*')
+            cast_id = actor.iloc[cast_idx]['id']
+            res = requests.get(
+                'https://api.themoviedb.org/3/person/{}?api_key={}&language=en-US'.format(cast_id, api_key))
+            data = res.json()
+            age = age_cast(data['birthday'])
+            k.markdown('*Age* : {}'.format(age))
+            k.markdown('*Born* : {}'.format(data['place_of_birth']))
+            # k.markdown('*Biography* : {}'.format(data['biography']))
+            st.text_area('Bio', data['biography'], height=200)
+            st.markdown('*Best Known For:*')
 
-#             known_for_idx = []
+            known_for_idx = []
 
-#             for i, k in enumerate(final.cast):
-#                 for j in k.split(','):
-#                     if re.search(name_cast + '$', j):
-#                         known_for_idx.append(i)
+            for i, k in enumerate(final.cast):
+                for j in k.split(','):
+                    if re.search(name_cast + '$', j):
+                        known_for_idx.append(i)
 
-#             known_posters = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4][
-#                 'poster'].values
-#             known_title = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4]['title'].values
-#             for i, cols in enumerate(st.columns(len(known_posters))):
-#                 cols.image('https://image.tmdb.org/t/p/w500' + known_posters[i], caption=known_title[i], width=170)
+            known_posters = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4][
+                'poster'].values
+            known_title = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4]['title'].values
+            for i, cols in enumerate(st.columns(len(known_posters))):
+                cols.image('https://image.tmdb.org/t/p/w500' + known_posters[i], caption=known_title[i], width=170)
 
 #     with st.sidebar:
 #         if st.button('Clear All Dropdowns'):
