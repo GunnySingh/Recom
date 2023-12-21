@@ -68,13 +68,13 @@ def data_load():
     sim_8 = pd.read_pickle('sim_8.pkl')
     sim_9 = pd.read_pickle('sim_9.pkl')
     sim_10 = pd.read_pickle('sim_10.pkl')
-    sim_11 = pd.read_pickle('sim_11.pkl')
-    sim_12 = pd.read_pickle('sim_12.pkl')
+    # sim_11 = pd.read_pickle('sim_11.pkl')
+    # sim_12 = pd.read_pickle('sim_12.pkl')
     final = pd.read_pickle('df_final.pkl')
     actor = pd.read_pickle('df_actor.pkl')
     eda_df = pd.read_pickle('eda_df.pkl')
 
-    sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4, sim_5, sim_6, sim_7, sim_8, sim_9, sim_10,sim_11,sim_12])
+    sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4, sim_5, sim_6, sim_7, sim_8, sim_9, sim_10])
 
     return  sim_mat, final, actor, eda_df
 
