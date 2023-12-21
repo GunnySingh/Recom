@@ -98,7 +98,7 @@ def data_load1():
     return sim_mat
 
 def data_load2():
-    final = pd.read_pickle('final_new.pkl')
+    final = pd.read_pickle('final_new2.pkl')
     actor = pd.read_pickle('df_actor.pkl')
     eda_df = pd.read_pickle('eda_df.pkl')
     return final,actor,eda_df
@@ -142,84 +142,84 @@ if sel == 'Home':
     name = st.selectbox(label='Please select the Movie', options=final['key'], index=2500,
                         help='Select Movie from below to get recommendations')
 
-    # st.subheader(name)
-    # st.markdown("""
-    # <h2 style=color:teal;text-align:center;> {}</h1>""".format(name), unsafe_allow_html=True)
+    st.subheader(name)
+    st.markdown("""
+    <h2 style=color:teal;text-align:center;> {}</h1>""".format(name), unsafe_allow_html=True)
 
-    # index = final[final.key == name].index[0]
-    # poster_path = 'https://image.tmdb.org/t/p/w500' + final.iloc[index]['poster']
-    # year = final.iloc[index]['year']
-    # runtime = final.iloc[index]['runtime']
-    # rating = final.iloc[index]['rating']
-    # genre = final.iloc[index]['genre']
-    # summary = final.iloc[index]['overview']
-    # director = final.iloc[index]['director']
-    # cast = final.iloc[index]['cast']
-    # num_votes = final.iloc[index]['num_votes']
-    # budget = final.iloc[index]['budget']
-    # revenue = final.iloc[index]['revenue']
+    index = final[final.key == name].index[0]
+    poster_path = 'https://image.tmdb.org/t/p/w500' + final.iloc[index]['poster']
+    year = final.iloc[index]['year']
+    runtime = final.iloc[index]['runtime']
+    rating = final.iloc[index]['rating']
+    genre = final.iloc[index]['genre']
+    summary = final.iloc[index]['overview']
+    director = final.iloc[index]['director']
+    cast = final.iloc[index]['cast']
+    num_votes = final.iloc[index]['num_votes']
+    budget = final.iloc[index]['budget']
+    revenue = final.iloc[index]['revenue']
 
-    # col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-    # with col1:
-    #     st.image(poster_path)
+    with col1:
+        st.image(poster_path)
 
-    # with col2:
-    #     st.markdown('**`Name`** : {}'.format(final.iloc[index]['title']))
-    #     st.markdown('**`Year`** : {}'.format(year))
-    #     st.markdown('**`Runtime`** : {}'.format(runtime))
-    #     st.markdown('**`Genre`** : {}'.format(genre))
-    #     st.markdown('**`Rating`** : {} ({} Votes)'.format(rating, num_votes))
-    #     st.markdown('**`Budget`** : {}'.format(budget))
-    #     st.markdown('**`Revenue`** : {}'.format(revenue))
-    #     st.markdown('**`Summary`** : {}'.format(summary))
-    #     st.markdown('**`Director`** : {}'.format(director))
+    with col2:
+        st.markdown('**`Name`** : {}'.format(final.iloc[index]['title']))
+        st.markdown('**`Year`** : {}'.format(year))
+        st.markdown('**`Runtime`** : {}'.format(runtime))
+        st.markdown('**`Genre`** : {}'.format(genre))
+        st.markdown('**`Rating`** : {} ({} Votes)'.format(rating, num_votes))
+        st.markdown('**`Budget`** : {}'.format(budget))
+        st.markdown('**`Revenue`** : {}'.format(revenue))
+        st.markdown('**`Summary`** : {}'.format(summary))
+        st.markdown('**`Director`** : {}'.format(director))
 
-    # len_cast = len(cast.split(','))
-    # cast_names = cast.split(',')
-
-
-    # def age_cast(birthdate):
-    #     today = date.today()
-    #     d = datetime.strptime(birthdate, "%Y-%m-%d")
-    #     age = ((today - d.date()) / 365).days
-    #     return str(age) + ' Years'
+    len_cast = len(cast.split(','))
+    cast_names = cast.split(',')
 
 
-    # api_key = 'ef9ce1abb955e162c424955afe1df5a7'
-    # st.markdown('#### CAST :')
+    def age_cast(birthdate):
+        today = date.today()
+        d = datetime.strptime(birthdate, "%Y-%m-%d")
+        age = ((today - d.date()) / 365).days
+        return str(age) + ' Years'
 
-    # for i, k in enumerate(st.columns(len_cast)):
-    #     name_cast = cast_names[i]
-    #     name_cast = difflib.get_close_matches(name_cast, actor.name)[0]
-    #     cast_idx = actor[actor.name == name_cast].index[0]
-    #     poster_path_cast = actor.iloc[cast_idx]['poster']
-    #     k.image(poster_path_cast)
-    #     if k.button(cast_names[i], key=i):
 
-    #         cast_id = actor.iloc[cast_idx]['id']
-    #         res = requests.get(
-    #             'https://api.themoviedb.org/3/person/{}?api_key={}&language=en-US'.format(cast_id, api_key))
-    #         data = res.json()
-    #         age = age_cast(data['birthday'])
-    #         k.markdown('*Age* : {}'.format(age))
-    #         k.markdown('*Born* : {}'.format(data['place_of_birth']))
-    #         # k.markdown('*Biography* : {}'.format(data['biography']))
-    #         st.text_area('Bio', data['biography'], height=200)
-    #         st.markdown('*Best Known For:*')
+    api_key = 'ef9ce1abb955e162c424955afe1df5a7'
+    st.markdown('#### CAST :')
 
-    #         known_for_idx = []
+    for i, k in enumerate(st.columns(len_cast)):
+        name_cast = cast_names[i]
+        name_cast = difflib.get_close_matches(name_cast, actor.name)[0]
+        cast_idx = actor[actor.name == name_cast].index[0]
+        poster_path_cast = actor.iloc[cast_idx]['poster']
+        k.image(poster_path_cast)
+        if k.button(cast_names[i], key=i):
 
-    #         for i, k in enumerate(final.cast):
-    #             for j in k.split(','):
-    #                 if re.search(name_cast + '$', j):
-    #                     known_for_idx.append(i)
+            cast_id = actor.iloc[cast_idx]['id']
+            res = requests.get(
+                'https://api.themoviedb.org/3/person/{}?api_key={}&language=en-US'.format(cast_id, api_key))
+            data = res.json()
+            age = age_cast(data['birthday'])
+            k.markdown('*Age* : {}'.format(age))
+            k.markdown('*Born* : {}'.format(data['place_of_birth']))
+            # k.markdown('*Biography* : {}'.format(data['biography']))
+            st.text_area('Bio', data['biography'], height=200)
+            st.markdown('*Best Known For:*')
 
-    #         known_posters = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4][
-    #             'poster'].values
-    #         known_title = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4]['title'].values
-    #         for i, cols in enumerate(st.columns(len(known_posters))):
-    #             cols.image('https://image.tmdb.org/t/p/w500' + known_posters[i], caption=known_title[i], width=170)
+            known_for_idx = []
+
+            for i, k in enumerate(final.cast):
+                for j in k.split(','):
+                    if re.search(name_cast + '$', j):
+                        known_for_idx.append(i)
+
+            known_posters = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4][
+                'poster'].values
+            known_title = final.iloc[known_for_idx].sort_values(by='num_votes_num', ascending=False)[:4]['title'].values
+            for i, cols in enumerate(st.columns(len(known_posters))):
+                cols.image('https://image.tmdb.org/t/p/w500' + known_posters[i], caption=known_title[i], width=170)
 
 #     with st.sidebar:
 #         if st.button('Clear All Dropdowns'):
