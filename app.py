@@ -80,22 +80,22 @@ with st.sidebar:
 
 # sim_mat, final, actor, eda_df = data_load()
 
-def data_load1():
-    sim_1 = pickle.load(open('sim_1.pkl', 'rb'))
-    sim_2 = pickle.load(open('sim_2.pkl', 'rb'))
-    sim_3 = pickle.load(open('sim_3.pkl', 'rb'))
-    sim_4 = pickle.load(open('sim_4.pkl', 'rb'))
-    sim_5 = pickle.load(open('sim_5.pkl', 'rb'))
-    sim_6 = pickle.load(open('sim_6.pkl', 'rb'))
-    sim_7 = pickle.load(open('sim_7.pkl', 'rb'))
-    sim_8 = pickle.load(open('sim_8.pkl', 'rb'))
-    sim_9 = pickle.load(open('sim_9.pkl', 'rb'))
-    sim_10 = pickle.load(open('sim_10.pkl', 'rb'))
-    sim_11 = pickle.load(open('sim_11.pkl', 'rb'))
-    sim_12 = pickle.load(open('sim_12.pkl', 'rb'))
+# def data_load1():
+#     sim_1 = pickle.load(open('sim_1.pkl', 'rb'))
+#     sim_2 = pickle.load(open('sim_2.pkl', 'rb'))
+#     sim_3 = pickle.load(open('sim_3.pkl', 'rb'))
+#     sim_4 = pickle.load(open('sim_4.pkl', 'rb'))
+#     sim_5 = pickle.load(open('sim_5.pkl', 'rb'))
+#     sim_6 = pickle.load(open('sim_6.pkl', 'rb'))
+#     sim_7 = pickle.load(open('sim_7.pkl', 'rb'))
+#     sim_8 = pickle.load(open('sim_8.pkl', 'rb'))
+#     sim_9 = pickle.load(open('sim_9.pkl', 'rb'))
+#     sim_10 = pickle.load(open('sim_10.pkl', 'rb'))
+#     sim_11 = pickle.load(open('sim_11.pkl', 'rb'))
+#     sim_12 = pickle.load(open('sim_12.pkl', 'rb'))
 
-    sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4, sim_5, sim_6, sim_7, sim_8, sim_9, sim_10,sim_11,sim_12])
-    return sim_mat
+#     sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4, sim_5, sim_6, sim_7, sim_8, sim_9, sim_10,sim_11,sim_12])
+#     return sim_mat
 
 def data_load2():
     final = pd.read_pickle('df_final.pkl')
@@ -104,7 +104,7 @@ def data_load2():
     return final,actor,eda_df
 
 
-sim_mat = data_load1()
+# sim_mat = data_load1()
 final,actor,eda_df = data_load2()
 
 
@@ -131,49 +131,49 @@ final,actor,eda_df = data_load2()
 #     return final.iloc[idx]['title'].values[1:],'https://image.tmdb.org/t/p/w500'+final.iloc[idx]['poster'].values[1:],final.iloc[idx]['key'].values[1:]
 
 
-# if sel == 'Home':
+if sel == 'Home':
 
-#     # st.title('MOVIE RECOMMENDATION SYSTEM')
-#     st.markdown("""
-#     <h3 style = font-size:270%;text-align:center;color:darkslategray;>
-#     MOVIE RECOMMENDATION SYSTEM
-#     </h3>
-#     """, unsafe_allow_html=True)
-#     name = st.selectbox(label='Please select the Movie', options=final['key'], index=10375,
-#                         help='Select Movie from below to get recommendations')
+    # st.title('MOVIE RECOMMENDATION SYSTEM')
+    st.markdown("""
+    <h3 style = font-size:270%;text-align:center;color:darkslategray;>
+    MOVIE RECOMMENDATION SYSTEM
+    </h3>
+    """, unsafe_allow_html=True)
+    name = st.selectbox(label='Please select the Movie', options=final['key'], index=10375,
+                        help='Select Movie from below to get recommendations')
 
-#     # st.subheader(name)
-#     st.markdown("""
-#     <h2 style=color:teal;text-align:center;> {}</h1>""".format(name), unsafe_allow_html=True)
+    # st.subheader(name)
+    st.markdown("""
+    <h2 style=color:teal;text-align:center;> {}</h1>""".format(name), unsafe_allow_html=True)
 
-#     index = final[final.key == name].index[0]
-#     poster_path = 'https://image.tmdb.org/t/p/w500' + final.iloc[index]['poster']
-#     year = final.iloc[index]['year']
-#     runtime = final.iloc[index]['runtime']
-#     rating = final.iloc[index]['rating']
-#     genre = final.iloc[index]['genre']
-#     summary = final.iloc[index]['overview']
-#     director = final.iloc[index]['director']
-#     cast = final.iloc[index]['cast']
-#     num_votes = final.iloc[index]['num_votes']
-#     budget = final.iloc[index]['budget']
-#     revenue = final.iloc[index]['revenue']
+    index = final[final.key == name].index[0]
+    poster_path = 'https://image.tmdb.org/t/p/w500' + final.iloc[index]['poster']
+    year = final.iloc[index]['year']
+    runtime = final.iloc[index]['runtime']
+    rating = final.iloc[index]['rating']
+    genre = final.iloc[index]['genre']
+    summary = final.iloc[index]['overview']
+    director = final.iloc[index]['director']
+    cast = final.iloc[index]['cast']
+    num_votes = final.iloc[index]['num_votes']
+    budget = final.iloc[index]['budget']
+    revenue = final.iloc[index]['revenue']
 
-#     col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-#     with col1:
-#         st.image(poster_path)
+    with col1:
+        st.image(poster_path)
 
-#     with col2:
-#         st.markdown('**`Name`** : {}'.format(final.iloc[index]['title']))
-#         st.markdown('**`Year`** : {}'.format(year))
-#         st.markdown('**`Runtime`** : {}'.format(runtime))
-#         st.markdown('**`Genre`** : {}'.format(genre))
-#         st.markdown('**`Rating`** : {} ({} Votes)'.format(rating, num_votes))
-#         st.markdown('**`Budget`** : {}'.format(budget))
-#         st.markdown('**`Revenue`** : {}'.format(revenue))
-#         st.markdown('**`Summary`** : {}'.format(summary))
-#         st.markdown('**`Director`** : {}'.format(director))
+    with col2:
+        st.markdown('**`Name`** : {}'.format(final.iloc[index]['title']))
+        st.markdown('**`Year`** : {}'.format(year))
+        st.markdown('**`Runtime`** : {}'.format(runtime))
+        st.markdown('**`Genre`** : {}'.format(genre))
+        st.markdown('**`Rating`** : {} ({} Votes)'.format(rating, num_votes))
+        st.markdown('**`Budget`** : {}'.format(budget))
+        st.markdown('**`Revenue`** : {}'.format(revenue))
+        st.markdown('**`Summary`** : {}'.format(summary))
+        st.markdown('**`Director`** : {}'.format(director))
 
 #     len_cast = len(cast.split(','))
 #     cast_names = cast.split(',')
