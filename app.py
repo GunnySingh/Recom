@@ -97,7 +97,15 @@ def data_load1():
     sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4, sim_5, sim_6, sim_7, sim_8, sim_9, sim_10,sim_11,sim_12])
     return sim_mat
 
+def data_load2():
+    final = pd.read_pickle('df_final.pkl')
+    actor = pd.read_pickle('df_actor.pkl')
+    eda_df = pd.read_pickle('eda_df.pkl')
+    return final,actor,eda_df
 
+
+sim_mat = dataload1()
+final,actor,eda_df = dataload2()
 
 
 
