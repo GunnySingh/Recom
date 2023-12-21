@@ -119,16 +119,16 @@ sim_mat = data_load1()
 
 
 
-def recommend(movie):
-    index = final[final.key == movie].index[0]
-    results = sorted(list(enumerate(sim_mat[index])),key=lambda x :x[1])
+# def recommend(movie):
+#     index = final[final.key == movie].index[0]
+#     results = sorted(list(enumerate(sim_mat[index])),key=lambda x :x[1])
 
-    idx = []
-    for i in results[:13]:
-        idx.append(i[0])
+#     idx = []
+#     for i in results[:13]:
+#         idx.append(i[0])
 
 
-    return final.iloc[idx]['title'].values[1:],'https://image.tmdb.org/t/p/w500'+final.iloc[idx]['poster'].values[1:],final.iloc[idx]['key'].values[1:]
+#     return final.iloc[idx]['title'].values[1:],'https://image.tmdb.org/t/p/w500'+final.iloc[idx]['poster'].values[1:],final.iloc[idx]['key'].values[1:]
 
 
 if sel == 'Home':
