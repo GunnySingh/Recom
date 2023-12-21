@@ -139,7 +139,7 @@ if sel == 'Home':
     MOVIE RECOMMENDATION SYSTEM
     </h3>
     """, unsafe_allow_html=True)
-    name = st.selectbox(label='Please select the Movie', options=final['key'], index=10375,
+    name = st.selectbox(label='Please select the Movie', options=final['key'], index=6500,
                         help='Select Movie from below to get recommendations')
 
     # st.subheader(name)
