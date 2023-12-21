@@ -80,31 +80,31 @@ with st.sidebar:
 
 # sim_mat, final, actor, eda_df = data_load()
 
-# def data_load1():
-#     sim_1 = pickle.load(open('sim_1.pkl', 'rb'))
-#     sim_2 = pickle.load(open('sim_2.pkl', 'rb'))
-#     sim_3 = pickle.load(open('sim_3.pkl', 'rb'))
-#     sim_4 = pickle.load(open('sim_4.pkl', 'rb'))
-#     sim_5 = pickle.load(open('sim_5.pkl', 'rb'))
-#     sim_6 = pickle.load(open('sim_6.pkl', 'rb'))
-#     sim_7 = pickle.load(open('sim_7.pkl', 'rb'))
-#     sim_8 = pickle.load(open('sim_8.pkl', 'rb'))
-#     sim_9 = pickle.load(open('sim_9.pkl', 'rb'))
-#     sim_10 = pickle.load(open('sim_10.pkl', 'rb'))
-#     sim_11 = pickle.load(open('sim_11.pkl', 'rb'))
-#     sim_12 = pickle.load(open('sim_12.pkl', 'rb'))
+def data_load1():
+    sim_1 = pickle.load(open('new_sim1.pkl', 'rb'))
+    sim_2 = pickle.load(open('new_sim2.pkl', 'rb'))
+    sim_3 = pickle.load(open('new_sim3.pkl', 'rb'))
+    sim_4 = pickle.load(open('new_sim4.pkl', 'rb'))
+    # sim_5 = pickle.load(open('sim_5.pkl', 'rb'))
+    # sim_6 = pickle.load(open('sim_6.pkl', 'rb'))
+    # sim_7 = pickle.load(open('sim_7.pkl', 'rb'))
+    # sim_8 = pickle.load(open('sim_8.pkl', 'rb'))
+    # sim_9 = pickle.load(open('sim_9.pkl', 'rb'))
+    # sim_10 = pickle.load(open('sim_10.pkl', 'rb'))
+    # sim_11 = pickle.load(open('sim_11.pkl', 'rb'))
+    # sim_12 = pickle.load(open('sim_12.pkl', 'rb'))
 
-#     sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4, sim_5, sim_6, sim_7, sim_8, sim_9, sim_10,sim_11,sim_12])
-#     return sim_mat
+    sim_mat = np.concatenate([sim_1, sim_2, sim_3, sim_4])
+    return sim_mat
 
 def data_load2():
-    final = pd.read_pickle('df_final.pkl')
+    final = pd.read_pickle('final_new.pkl')
     actor = pd.read_pickle('df_actor.pkl')
     eda_df = pd.read_pickle('eda_df.pkl')
     return final,actor,eda_df
 
 
-# sim_mat = data_load1()
+sim_mat = data_load1()
 final,actor,eda_df = data_load2()
 
 
